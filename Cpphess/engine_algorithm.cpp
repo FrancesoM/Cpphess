@@ -232,11 +232,11 @@ move_t select_best_move(team_t player, Board &init_board){
      
     move_t ret_move =  bestMoves.begin()->move;
     
-    LOG(INFO, "I think that the best move is %d %d -> %d %d because it gives an evaluation of %d with depth %d\n",
-           ret_move.start_position.x,
-           ret_move.start_position.y,
-           ret_move.end_position.x,
-           ret_move.end_position.y,
+    LOG(INFO, "I think that the best move is %c%c -> %c%c because it gives an evaluation of %d with depth %d\n",
+           Board::FILE(ret_move.start_position.y),
+           Board::ROW(ret_move.start_position.x),
+           Board::FILE(ret_move.end_position.y),
+           Board::ROW(ret_move.end_position.x),
            bestMoves.begin()->eva,
            MAX_DEPTH );
            

@@ -203,10 +203,11 @@ int main(int argc, const char * argv[]) {
         
         while(1) {
             
-            int sx,sy,ex,ey;
+            char sx,sy,ex,ey;
             printf("Select your move: ");
-            scanf(" %d %d %d %d",&sx,&sy,&ex,&ey);
-            move_t mv = {{sx,sy},{ex,ey}};
+            scanf(" %c%c %c%c",&sy,&sx,&ey,&ex);
+            move_t mv = {{Board::X(sx),Board::Y(sy)},
+                         {Board::X(ex),Board::Y(ey)}};
             
             temp_board.move_piece(mv);
             temp_board.print_board_status(std::cout);
