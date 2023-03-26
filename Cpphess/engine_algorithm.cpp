@@ -108,7 +108,7 @@ move_t select_best_move(team_t player, Board &init_board){
                     LOG(DBGX,"\t\t%d %d eval %d \n",depth,pred_idx,pred_board.evaluate_board());
                     pred_idx++;
                     
-                    //LOG(DBGX,"%s",pred_board.get_status_str_repr().c_str());
+                    LOG(DBGX,"%s",pred_board.get_status_str_repr().c_str());
                 }
                 
                 if ( player==WHITE_TEAM ) {
@@ -162,9 +162,9 @@ move_t select_best_move(team_t player, Board &init_board){
                 MoveState ms = MoveState(good_move,temp_board);
                 tr.add_child_at(ms,l_idx);
                 
-                LOG(DBG,"\t\t%d Selecting this move: \n%s because the worst scenario for %s is only %d  \n",
+                LOG(DBG,"\t\t%d Selecting this move: \n%s because the worst scenario for %c is only %d  \n",
                     depth,
-                    //temp_board.get_status_str_repr().c_str(),
+                    temp_board.get_status_str_repr().c_str(),
                     player==WHITE_TEAM?'W':'B',
                     move_and_response_eva[i].eva);
                 

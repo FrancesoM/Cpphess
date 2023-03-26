@@ -64,7 +64,10 @@ std::string Board::get_status_str_repr() {
     int string_pos = 0;
     
     int row_n = 7;
-        
+    
+    
+    string_pos += snprintf(&repr[string_pos],STRLEN-string_pos,"\n");
+    
     for(auto row = this->BoardState.rbegin(); row != this->BoardState.rend(); ++row){
         
         string_pos += snprintf(&repr[string_pos],STRLEN-string_pos,"%d ",row_n+1);
@@ -156,16 +159,18 @@ std::forward_list<move_t> Board::get_all_moves(team_t player)
         }
     }
 
-    auto all_captures = std::forward_list<move_t>();
-    auto all_moves    = std::forward_list<move_t>();
+
 
     // TODO: This has to be an iterator over every piece of the player. Too much code.
+    
     for (int x= 0; x<N_SQUARES; x++) {
         for (int y=0; y<N_SQUARES; y++) {
             Piece * p = this->BoardState[x][y];
             if ( p != nullptr ) {
                 if ( p->get_teamID() == player ) {
                     
+                    auto all_captures = std::forward_list<move_t>();
+                    auto all_moves    = std::forward_list<move_t>();
                     p->get_AllMoves(this->BoardState, {x,y}, all_moves,all_captures);
                     
                     // Pointer to avoid copies all around
@@ -183,9 +188,9 @@ std::forward_list<move_t> Board::get_all_moves(team_t player)
                         
                         // For every move, if after the move the opponent has any capture on my king, that move is illegal and
                         // I need to remove it from the possible moves
-                        /*
+                        
                         // Also note that if I was moving the king, the kings_position will change
-                        if( kings_pos == move_ptr->start_position ) {
+                        if( kings_pos.x == move_ptr->start_position.x && kings_pos.y == move_ptr->start_position.y ) {
                             kings_pos.x = move_ptr->end_position.x;
                             kings_pos.y = move_ptr->end_position.y;
                         }
@@ -195,20 +200,31 @@ std::forward_list<move_t> Board::get_all_moves(team_t player)
                         
                         // Prepare lists to get the opponent captures
                         int check_on_board = 0;
-                        auto opponent_captures = std::forward_list<move_t>();
-                        auto opponent_moves    = std::forward_list<move_t>();
-                        for (int x= 0; x<N_SQUARES; x++) {
-                            for (int y=0; y<N_SQUARES; y++) {
+                        for (int i= 0; i<N_SQUARES; i++) {
+                            for (int j=0; j<N_SQUARES; j++) {
                                 // op as opponent piece
-                                Piece  *op = this->BoardState[x][y];
+                                auto opponent_captures = std::forward_list<move_t>();
+                                auto opponent_moves    = std::forward_list<move_t>();
+                                Piece  *op = tb.BoardState[i][j];
                                 if ( op != nullptr ) {
                                     if ( op->get_teamID() == (team_t)(player^1) ) {
-                                        
-                                        op->get_AllMoves(this->BoardState, {x,y}, opponent_moves,opponent_captures);
+                                        	
+                                        op->get_AllMoves(tb.BoardState, {i,j}, opponent_moves,opponent_captures);
                                         for( auto om : opponent_captures ) {
                                             
-                                            if ( om.end_position == kings_pos )
+                                            if ( om.end_position.x == kings_pos.x && om.end_position.y == kings_pos.y )
                                             {
+                                                /*
+                                                printf("\nIn this position: %s the opponent can capture the king!\n",tb.get_status_str_repr().c_str());
+                                                printf("Because %s %c%c -> %c%c gets the opponent kind, which is at %c%c\n",
+                                                       op->get_name().c_str(),
+                                                       Board::FILE(om.start_position.y),
+                                                       Board::ROW(om.start_position.x),
+                                                       Board::FILE(om.end_position.y),
+                                                       Board::ROW(om.end_position.x),
+                                                       Board::FILE(kings_pos.y),
+                                                       Board::ROW(kings_pos.x));
+                                                */
                                                 check_on_board = check_on_board | 1;
                                             }
                                         }
@@ -221,10 +237,7 @@ std::forward_list<move_t> Board::get_all_moves(team_t player)
                         // And I can add it to the list of moves. 
                         if( !check_on_board ){
                             all_player_moves.push_front(*move_ptr);
-                        }*/
-                        
-                        
-                        all_player_moves.push_front(*move_ptr);
+                        }
                         
                     }
                 }
