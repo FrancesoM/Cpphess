@@ -32,6 +32,7 @@ auto Piece::remove_outbound_positions(std::forward_list<move_t> & all_positions)
 
 void Piece::append_position_with_logic(
         std::forward_list<move_t> &moves_list,
+        std::forward_list<move_t> &capture_list,
         const board_state_t &board_state,
         const point_t& curr_pos,
         update_pos_fptr update_pos_logic ,
@@ -57,7 +58,7 @@ void Piece::append_position_with_logic(
                 if( !check_square_is_friend(board_state, new_pos)) {
                     // Capture
                     //printf("%s captures at %d %d\n",this->get_name().c_str(), new_pos.x,new_pos.y);
-                    moves_list.push_front({curr_pos,new_pos});
+                    capture_list.push_front({curr_pos,new_pos});
                 }
                 // We have reached a limit by finding another piece, if you can capture you add the move.
                 occupied = 1;
@@ -73,12 +74,14 @@ void Piece::append_position_with_logic(
     
 }
 
-std::forward_list<move_t> Pawn::get_AllMoves(const board_state_t & board_state, const point_t curr_pos) {
+ void Pawn::get_AllMoves(const board_state_t & board_state,
+                         const point_t curr_pos,
+                         std::forward_list<move_t> & moves,
+                         std::forward_list<move_t> & captures ) {
         
     // Find all legal moves
     
     point_t new_pos;
-    std::forward_list<move_t> moves;
     
     // Moving works as follow. We try all the positions until we are blocked by another piece on the board.
     // By starting at the closest position we know that we are blocked at the first piece encountered.
@@ -113,7 +116,7 @@ std::forward_list<move_t> Pawn::get_AllMoves(const board_state_t & board_state, 
     // This is legal only if there is a piece that we want to capture, by the nature of pawns
     if ( check_square_is_occupied(board_state,new_pos) ) {
         if ( !check_square_is_friend(board_state,new_pos) ) {
-            moves.push_front({curr_pos,new_pos});
+            captures.push_front({curr_pos,new_pos});
         }
     }
     
@@ -124,150 +127,149 @@ std::forward_list<move_t> Pawn::get_AllMoves(const board_state_t & board_state, 
     
     if ( check_square_is_occupied(board_state,new_pos) ) {
         if ( !check_square_is_friend(board_state,new_pos) ) {
-            moves.push_front({curr_pos,new_pos});
+            captures.push_front({curr_pos,new_pos});
         }
     }
     
     // TODO: En passant is missing.
     
-    Piece::remove_outbound_positions(moves);
+    //Piece::remove_outbound_positions(moves);
     
-    return moves;
     
 };
 
-std::forward_list<move_t> Rook::get_AllMoves(const board_state_t & board_state, const point_t curr_pos) {
-    
-    std::forward_list<move_t> moves;
-    
+void Rook::get_AllMoves(const board_state_t & board_state,
+                         const point_t curr_pos,
+                         std::forward_list<move_t> & moves,
+                         std::forward_list<move_t> & captures ) {
     
     // Move horizontal: new_pos.x += d
-    append_position_with_logic(moves, board_state, curr_pos,[](point_t &pos,int d){
+    append_position_with_logic(moves, captures, board_state, curr_pos,[](point_t &pos,int d){
         pos.x += d;
         });
  
     // Move Vertical:
-    append_position_with_logic(moves, board_state, curr_pos,[](point_t &pos,int d){
+    append_position_with_logic(moves, captures, board_state, curr_pos,[](point_t &pos,int d){
         pos.y += d;
         });
     
     //moves.unique();
-    Piece::remove_outbound_positions(moves);
-    return moves;
+    //Piece::remove_outbound_positions(moves);
 };
 
 
-std::forward_list<move_t> Bishop::get_AllMoves(const board_state_t & board_state, const point_t curr_pos) {
-    
-    std::forward_list<move_t> moves;
+void Bishop::get_AllMoves(const board_state_t & board_state,
+                         const point_t curr_pos,
+                         std::forward_list<move_t> & moves,
+                         std::forward_list<move_t> & captures ) {
     
     // Move one diagonal
-    append_position_with_logic(moves, board_state, curr_pos,[](point_t &pos,int d){
+    append_position_with_logic(moves, captures, board_state, curr_pos,[](point_t &pos,int d){
         pos.x += d;
         pos.y += d;
         });
 
     // Move other diagonal
-    append_position_with_logic(moves, board_state, curr_pos,[](point_t &pos,int d){
+    append_position_with_logic(moves, captures, board_state, curr_pos,[](point_t &pos,int d){
         pos.x -= d;
         pos.y += d;
         });
         
     //moves.unique();
-    Piece::remove_outbound_positions(moves);
-    return moves;
+    //Piece::remove_outbound_positions(moves);
 };
+	
+void Queen::get_AllMoves(const board_state_t & board_state,
+                         const point_t curr_pos,
+                         std::forward_list<move_t> & moves,
+                         std::forward_list<move_t> & captures ) {
 
-std::forward_list<move_t> Queen::get_AllMoves(const board_state_t & board_state, const point_t curr_pos) {
-    
-    std::forward_list<move_t> moves;
     
     // Move horizontally
-    append_position_with_logic(moves,  board_state, curr_pos,[](point_t &pos,int d){
+    append_position_with_logic(moves, captures, board_state, curr_pos,[](point_t &pos,int d){
         pos.x += d;
         });
 
     
     // Move Vertical:
-    append_position_with_logic(moves, board_state, curr_pos,[](point_t &pos,int d){
+    append_position_with_logic(moves, captures, board_state, curr_pos,[](point_t &pos,int d){
         pos.y += d;
         });
     
     // Move one diagonal
-    append_position_with_logic(moves, board_state, curr_pos,[](point_t &pos,int d){
+    append_position_with_logic(moves, captures, board_state, curr_pos,[](point_t &pos,int d){
         pos.x += d;
         pos.y += d;
         });
     
     // Move other diagonal
-    append_position_with_logic(moves, board_state, curr_pos,[](point_t &pos,int d){
+    append_position_with_logic(moves, captures, board_state, curr_pos,[](point_t &pos,int d){
         pos.x -= d;
         pos.y += d;
         });
         
     //moves.unique();
-    Piece::remove_outbound_positions(moves);
-    return moves;
+    //Piece::remove_outbound_positions(moves);
 };
 
-std::forward_list<move_t> Knight::get_AllMoves(const board_state_t & board_state, const point_t curr_pos) {
-    
-    std::forward_list<move_t> moves;
+void Knight::get_AllMoves(const board_state_t & board_state,
+                         const point_t curr_pos,
+                         std::forward_list<move_t> & moves,
+                         std::forward_list<move_t> & captures ) {
 
-    append_position_with_logic(moves,  board_state, curr_pos,[](point_t &pos,int d){
+    append_position_with_logic(moves,  captures, board_state, curr_pos,[](point_t &pos,int d){
         pos.x += 2*d;
         pos.y += d;
         },1,0);
 
     
-    append_position_with_logic(moves, board_state, curr_pos,[](point_t &pos,int d){
+    append_position_with_logic(moves, captures, board_state, curr_pos,[](point_t &pos,int d){
         pos.x += d;
         pos.y += 2*d;
         },1,0);
     
-    append_position_with_logic(moves,  board_state, curr_pos,[](point_t &pos,int d){
+    append_position_with_logic(moves,  captures, board_state, curr_pos,[](point_t &pos,int d){
         pos.x += 2*d;
         pos.y += -d;
         },1,0);
 
     
-    append_position_with_logic(moves, board_state, curr_pos,[](point_t &pos,int d){
+    append_position_with_logic(moves, captures, board_state, curr_pos,[](point_t &pos,int d){
         pos.x += -d;
         pos.y += 2*d;
         },1,0);
     
-    Piece::remove_outbound_positions(moves);
-    return moves;
+    //Piece::remove_outbound_positions(moves);
 };
 
-std::forward_list<move_t> King::get_AllMoves(const board_state_t & board_state, const point_t curr_pos) {
-    
-    std::forward_list<move_t> moves;
+void King::get_AllMoves(const board_state_t & board_state,
+                         const point_t curr_pos,
+                         std::forward_list<move_t> & moves,
+                         std::forward_list<move_t> & captures ) {
     
     // Move horizontally
-    append_position_with_logic(moves,  board_state, curr_pos,[](point_t &pos,int d){
+    append_position_with_logic(moves,  captures, board_state, curr_pos,[](point_t &pos,int d){
         pos.x += d;
         },1);
 
     
     // Move Vertical:
-    append_position_with_logic(moves, board_state, curr_pos,[](point_t &pos,int d){
+    append_position_with_logic(moves, captures, board_state, curr_pos,[](point_t &pos,int d){
         pos.y += d;
         },1);
     
     // Move one diagonal
-    append_position_with_logic(moves, board_state, curr_pos,[](point_t &pos,int d){
+    append_position_with_logic(moves, captures, board_state, curr_pos,[](point_t &pos,int d){
         pos.x += d;
         pos.y += d;
         },1);
     
     // Move other diagonal
-    append_position_with_logic(moves, board_state, curr_pos,[](point_t &pos,int d){
+    append_position_with_logic(moves, captures, board_state, curr_pos,[](point_t &pos,int d){
         pos.x -= d;
         pos.y += d;
         },1);
     
     //moves.unique();
-    Piece::remove_outbound_positions(moves);
-    return moves;
+    //Piece::remove_outbound_positions(moves);
 };

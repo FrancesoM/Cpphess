@@ -100,7 +100,7 @@ int Board::evaluate_board()
         for(auto col = 0; col < N_SQUARES; ++col){
             if ( this->BoardState[row][col] != nullptr )
             {
-                if ( turn_number > 6 )
+                if ( turn_number > 12 )
                 {
                     score += this->BoardState[row][col]->get_value() * this->position_correction_late_game[row][col];
                 } else {
@@ -137,25 +137,99 @@ void Board::move_piece(move_t move) {
 
 std::forward_list<move_t> Board::get_all_moves(team_t player)
 {
-    int x = 0;
-    int y = 0;
-    auto all_player_moves = std::forward_list<move_t>();
-    for(auto row = this->BoardState.begin(); row != this->BoardState.end(); ++row){
-        y = 0;
-        for(auto col = row->begin(); col != row->end(); ++col){
-            if ( (*col) != nullptr ) {
-                if ( (*col)->get_teamID() == player ) {
+    std::forward_list<move_t> all_player_moves;
+    
+    // First we want to find the captures to see if there is any check. And also it might be helpful for evaluation.
+    // So we need to run this for the opponent, to see if they can capture our king
+
+    // Find player's king
+    point_t kings_pos;
+    for (int x= 0; x<N_SQUARES; x++) {
+        for (int y=0; y<N_SQUARES; y++) {
+            Piece * p = this->BoardState[x][y];
+            if ( p != nullptr ) {
+                if ( p->get_teamID() == player and p->get_name() == "KING") {
                     
-                    // TODO: Possible optimization: lots of copies
-                    auto moves = (*col)->get_AllMoves(this->BoardState, {x,y});
-                    for( auto m : moves ) {
-                        all_player_moves.push_front(m);
+                    kings_pos = {x,y};
+               }
+            }
+        }
+    }
+
+    auto all_captures = std::forward_list<move_t>();
+    auto all_moves    = std::forward_list<move_t>();
+
+    // TODO: This has to be an iterator over every piece of the player. Too much code.
+    for (int x= 0; x<N_SQUARES; x++) {
+        for (int y=0; y<N_SQUARES; y++) {
+            Piece * p = this->BoardState[x][y];
+            if ( p != nullptr ) {
+                if ( p->get_teamID() == player ) {
+                    
+                    p->get_AllMoves(this->BoardState, {x,y}, all_moves,all_captures);
+                    
+                    // Pointer to avoid copies all around
+                    auto every_move = std::forward_list<move_t*>();
+                    
+                    for( auto it = all_moves.begin(); it != all_moves.end(); it++ ) {
+                        every_move.push_front( (move_t*)&(*it) );
+                    }
+                    
+                    for( auto it = all_captures.begin(); it != all_captures.end(); it++ ) {
+                        every_move.push_front( (move_t*)&(*it) );
+                    }
+                    
+                    for( auto move_ptr : every_move ) {
+                        
+                        // For every move, if after the move the opponent has any capture on my king, that move is illegal and
+                        // I need to remove it from the possible moves
+                        /*
+                        // Also note that if I was moving the king, the kings_position will change
+                        if( kings_pos == move_ptr->start_position ) {
+                            kings_pos.x = move_ptr->end_position.x;
+                            kings_pos.y = move_ptr->end_position.y;
+                        }
+                        
+                        Board tb = Board(*this);
+                        tb.move_piece(*move_ptr);
+                        
+                        // Prepare lists to get the opponent captures
+                        int check_on_board = 0;
+                        auto opponent_captures = std::forward_list<move_t>();
+                        auto opponent_moves    = std::forward_list<move_t>();
+                        for (int x= 0; x<N_SQUARES; x++) {
+                            for (int y=0; y<N_SQUARES; y++) {
+                                // op as opponent piece
+                                Piece  *op = this->BoardState[x][y];
+                                if ( op != nullptr ) {
+                                    if ( op->get_teamID() == (team_t)(player^1) ) {
+                                        
+                                        op->get_AllMoves(this->BoardState, {x,y}, opponent_moves,opponent_captures);
+                                        for( auto om : opponent_captures ) {
+                                            
+                                            if ( om.end_position == kings_pos )
+                                            {
+                                                check_on_board = check_on_board | 1;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // Finally, if none of the opponent captures resulted in my king being taken, the move (*move_ptr) was valid
+                        // And I can add it to the list of moves. 
+                        if( !check_on_board ){
+                            all_player_moves.push_front(*move_ptr);
+                        }*/
+                        
+                        
+                        all_player_moves.push_front(*move_ptr);
+                        
                     }
                 }
             }
-            y++;
         }
-        x++;
     }
     
     return all_player_moves;

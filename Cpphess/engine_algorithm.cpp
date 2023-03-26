@@ -6,7 +6,7 @@
 //
 
 #include "engine_algorithm.hpp"
-#include "dbg_helpers.h"
+#include "dbg_utils.hpp"
 
 // Use this constructor to couple a move and an unrelated evaluation.
 // For instance: if I do this move, I will have this evaluation in X moves.
@@ -108,7 +108,7 @@ move_t select_best_move(team_t player, Board &init_board){
                     LOG(DBGX,"\t\t%d %d eval %d \n",depth,pred_idx,pred_board.evaluate_board());
                     pred_idx++;
                     
-                    LOG(DBGX,"%s",pred_board.get_status_str_repr().c_str());
+                    //LOG(DBGX,"%s",pred_board.get_status_str_repr().c_str());
                 }
                 
                 if ( player==WHITE_TEAM ) {
@@ -135,7 +135,7 @@ move_t select_best_move(team_t player, Board &init_board){
                 Board pred_board(temp_board);
                 pred_board.move_piece( response_states.begin()->move  );
                 
-                LOG(DBG,"%s",pred_board.get_status_str_repr().c_str());
+                //LOG(DBG,"%s",pred_board.get_status_str_repr().c_str());
                 move_idx++;
             }
             
@@ -164,7 +164,7 @@ move_t select_best_move(team_t player, Board &init_board){
                 
                 LOG(DBG,"\t\t%d Selecting this move: \n%s because the worst scenario for %s is only %d  \n",
                     depth,
-                    temp_board.get_status_str_repr().c_str(),
+                    //temp_board.get_status_str_repr().c_str(),
                     player==WHITE_TEAM?'W':'B',
                     move_and_response_eva[i].eva);
                 

@@ -8,6 +8,7 @@
 #ifndef board_hpp
 #define board_hpp
 
+#include <forward_list>
 #include <stdio.h>
 #include <iostream>
 #include <string>

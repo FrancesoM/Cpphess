@@ -11,6 +11,7 @@
 		76E56D9C29CF9F4400649C78 /* engine_algorithm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 76E56D9329CF9F4400649C78 /* engine_algorithm.cpp */; };
 		76E56D9D29CF9F4400649C78 /* piece.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 76E56D9429CF9F4400649C78 /* piece.cpp */; };
 		76E56D9E29CF9F4400649C78 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 76E56D9A29CF9F4400649C78 /* main.cpp */; };
+		76E56DA429CFC90C00649C78 /* dbg_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 76E56DA229CFC90C00649C78 /* dbg_utils.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -33,9 +34,10 @@
 		76E56D9529CF9F4400649C78 /* engine_algorithm.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = engine_algorithm.hpp; sourceTree = "<group>"; };
 		76E56D9629CF9F4400649C78 /* board.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = board.hpp; sourceTree = "<group>"; };
 		76E56D9729CF9F4400649C78 /* piece.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = piece.hpp; sourceTree = "<group>"; };
-		76E56D9829CF9F4400649C78 /* dbg_helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dbg_helpers.h; sourceTree = "<group>"; };
 		76E56D9929CF9F4400649C78 /* chess_tree.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = chess_tree.hpp; sourceTree = "<group>"; };
 		76E56D9A29CF9F4400649C78 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		76E56DA229CFC90C00649C78 /* dbg_utils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = dbg_utils.cpp; sourceTree = "<group>"; };
+		76E56DA329CFC90C00649C78 /* dbg_utils.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = dbg_utils.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,12 +73,13 @@
 				76E56D9229CF9F4400649C78 /* board.cpp */,
 				76E56D9629CF9F4400649C78 /* board.hpp */,
 				76E56D9929CF9F4400649C78 /* chess_tree.hpp */,
-				76E56D9829CF9F4400649C78 /* dbg_helpers.h */,
 				76E56D9329CF9F4400649C78 /* engine_algorithm.cpp */,
 				76E56D9529CF9F4400649C78 /* engine_algorithm.hpp */,
 				76E56D9A29CF9F4400649C78 /* main.cpp */,
 				76E56D9429CF9F4400649C78 /* piece.cpp */,
 				76E56D9729CF9F4400649C78 /* piece.hpp */,
+				76E56DA229CFC90C00649C78 /* dbg_utils.cpp */,
+				76E56DA329CFC90C00649C78 /* dbg_utils.hpp */,
 			);
 			path = Cpphess;
 			sourceTree = "<group>";
@@ -138,6 +141,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				76E56DA429CFC90C00649C78 /* dbg_utils.cpp in Sources */,
 				76E56D9B29CF9F4400649C78 /* board.cpp in Sources */,
 				76E56D9C29CF9F4400649C78 /* engine_algorithm.cpp in Sources */,
 				76E56D9E29CF9F4400649C78 /* main.cpp in Sources */,

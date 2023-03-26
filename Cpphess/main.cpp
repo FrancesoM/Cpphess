@@ -12,6 +12,7 @@
 #include "engine_algorithm.hpp"
 #include "piece.hpp"
 #include "board.hpp"
+#include "dbg_utils.hpp"
 
 typedef enum{ TEST_SINGLE_PIECE,
               TEST_ALL_MOVES,
@@ -106,7 +107,7 @@ int main(int argc, const char * argv[]) {
     
     
     
-    test_id_t test_id = PLAY;
+    test_id_t test_id = TEST_MOVES_TREE;
     
     if (test_id == TEST_SINGLE_PIECE ) {
         
@@ -115,11 +116,21 @@ int main(int argc, const char * argv[]) {
         
         point_t pos_start = {Board::X(row),Board::Y(file)};
         
-        auto moves = board1.BoardState[pos_start.x][pos_start.y]->get_AllMoves(board1.BoardState,pos_start);
-        for(auto move_iterator = moves.begin(); move_iterator != moves.end(); ++move_iterator){
+        auto all_captures = std::forward_list<move_t>();
+        auto all_moves    = std::forward_list<move_t>();
+        board1.BoardState[pos_start.x][pos_start.y]->get_AllMoves(board1.BoardState,pos_start,all_moves,all_captures);
+        for(auto move_iterator = all_moves.begin(); move_iterator != all_moves.end(); ++move_iterator){
             // Move piece
             Board temp_board(board1.BoardState);
             temp_board.move_piece( (*move_iterator).start_position , (*move_iterator).end_position  );
+            temp_board.print_board_status(std::cout);
+            std::cout << "Evaluation is: " << temp_board.evaluate_board() << std::endl << std::endl;
+        }
+        
+        for(auto capture_iterator = all_moves.begin(); capture_iterator != all_moves.end(); ++capture_iterator){
+            // Capture piece
+            Board temp_board(board1.BoardState);
+            temp_board.move_piece( (*capture_iterator).start_position , (*capture_iterator).end_position  );
             temp_board.print_board_status(std::cout);
             std::cout << "Evaluation is: " << temp_board.evaluate_board() << std::endl << std::endl;
         }
@@ -182,8 +193,9 @@ int main(int argc, const char * argv[]) {
             // Move piece
             Board temp_board(board_test.BoardState);
             temp_board.move_piece( (*move_iterator).start_position , (*move_iterator).end_position  );
-            temp_board.print_board_status(std::cout);
-            std::cout << "Evaluation is: " << temp_board.evaluate_board() << " with move " << repr_move(*move_iterator) << std::endl << std::endl;
+            
+            LOG(INFO,"Evaluation is %d with move \n%s",temp_board.evaluate_board(),temp_board.get_status_str_repr().c_str() );
+            
         }
         
         
@@ -216,7 +228,7 @@ int main(int argc, const char * argv[]) {
             
             temp_board.move_piece(opponent_move);
             temp_board.print_board_status(std::cout);
-            
+                        
         }
     }
     

@@ -41,12 +41,12 @@ typedef struct{
     point_t start_position;
     point_t end_position;
 }move_t;
-
+/*
 inline std::string repr_move(move_t m){
     char s[256] = {0};
     snprintf(s, 256, "{%d,%d} -> {%d,%d}",m.start_position.x,m.start_position.y,m.end_position.x,m.end_position.y);
     return std::string(s);
-}
+}*/
 
 // This is used to pass around the state of the board. Type is a const, even if the object is not const, so that we don't accidentally modify it.
 // Forward declaration just to let the compiler know that Piece will exist
@@ -76,13 +76,13 @@ protected:
     // Each piece has it's own way of updating its position, however the boilerplate code that
     // checks if the square is occupied and so on it's repeated all over the place. It's nice
     // if we have a generic function that takes as input the logic on how to update the position
-    void append_position_with_logic(
-            std::forward_list<move_t> &moves_list,
-            const board_state_t &board_state,
-            const point_t& curr_pos,
-            update_pos_fptr update_pos_logic,
-            const int limit = N_SQUARES,
-            const bool stop_if_occupied=1);
+    void append_position_with_logic(        std::forward_list<move_t> &moves_list,
+                                            std::forward_list<move_t> &capture_list,
+                                            const board_state_t &board_state,
+                                            const point_t& curr_pos,
+                                            update_pos_fptr update_pos_logic ,
+                                            const int limit = N_SQUARES,
+                                            const bool stop_if_occupied = 1);
     
 public:
     // Construtctor - ID for the piece
@@ -116,8 +116,10 @@ public:
     }
     
     // Virtual method that returns a list of all the possible positions that the piece could go
-    virtual std::forward_list<move_t> get_AllMoves(const board_state_t & board_state, const point_t curr_pos) {
-        return std::forward_list<move_t>();
+    virtual void get_AllMoves(const board_state_t & board_state,
+                      const point_t curr_pos,
+                      std::forward_list<move_t> & moves,
+                      std::forward_list<move_t> & captures ) {
     };
 
 };
@@ -128,7 +130,10 @@ class Pawn: public Piece{
 public:
     Pawn(const team_t & ID) : Piece("PAWN",ID,"P",1) {};
     
-    std::forward_list<move_t> get_AllMoves(const board_state_t & board_state, const point_t curr_pos);
+    void get_AllMoves(const board_state_t & board_state,
+                      const point_t curr_pos,
+                      std::forward_list<move_t> & moves,
+                      std::forward_list<move_t> & captures );
 };
 
 class Rook: public Piece{
@@ -136,7 +141,10 @@ class Rook: public Piece{
 public:
     Rook(const team_t & ID) : Piece("ROOK",ID,"R",4) {};
     
-    std::forward_list<move_t> get_AllMoves(const board_state_t & board_state, const point_t curr_pos);
+    void get_AllMoves(const board_state_t & board_state,
+                      const point_t curr_pos,
+                      std::forward_list<move_t> & moves,
+                      std::forward_list<move_t> & captures );
 };
 
 class Bishop: public Piece{
@@ -144,7 +152,10 @@ class Bishop: public Piece{
 public:
     Bishop(const team_t & ID) : Piece("BISHOP",ID,"B",3) {};
     
-    std::forward_list<move_t> get_AllMoves(const board_state_t & board_state, const point_t curr_pos);
+    void get_AllMoves(const board_state_t & board_state,
+                      const point_t curr_pos,
+                      std::forward_list<move_t> & moves,
+                      std::forward_list<move_t> & captures );
 };
 
 class Knight: public Piece{
@@ -152,7 +163,10 @@ class Knight: public Piece{
 public:
     Knight(const team_t & ID) : Piece("KNIGHT",ID,"N",3) {};
     
-    std::forward_list<move_t> get_AllMoves(const board_state_t & board_state, const point_t curr_pos);
+    void get_AllMoves(const board_state_t & board_state,
+                      const point_t curr_pos,
+                      std::forward_list<move_t> & moves,
+                      std::forward_list<move_t> & captures );
 };
 
 class Queen: public Piece{
@@ -160,7 +174,10 @@ class Queen: public Piece{
 public:
     Queen(const team_t & ID) : Piece("QUEEN",ID,"Q",9) {};
     
-    std::forward_list<move_t> get_AllMoves(const board_state_t & board_state, const point_t curr_pos);
+    void get_AllMoves(const board_state_t & board_state,
+                      const point_t curr_pos,
+                      std::forward_list<move_t> & moves,
+                      std::forward_list<move_t> & captures );
 };
 
 class King: public Piece{
@@ -168,7 +185,10 @@ class King: public Piece{
 public:
     King(const team_t & ID) : Piece("KING",ID,"K",10000) {};
     
-    std::forward_list<move_t> get_AllMoves(const board_state_t & board_state, const point_t curr_pos);
+    void get_AllMoves(const board_state_t & board_state,
+                      const point_t curr_pos,
+                      std::forward_list<move_t> & moves,
+                      std::forward_list<move_t> & captures );
 };
 
 
